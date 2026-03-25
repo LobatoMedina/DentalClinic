@@ -1,0 +1,23 @@
+@use "../base/variables" as v;
+
+@mixin contenedor() {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0;
+    font-size: 2em;
+    font-family: v.$font;
+    font-weight: 700;
+    color: v.$color-letras;
+}
+
+@mixin ajustes($ajusteJC: unset, $alineacionAL: unset) {
+    justify-content: $ajusteJC;
+    align-items: $alineacionAL;
+}
+
+@mixin seccion-content() {
+    min-height: 80vh;
+    position: relative;
+    background: v.$color-bg;
+    padding: 120px 100px;
+}

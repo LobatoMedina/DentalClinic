@@ -1,0 +1,113 @@
+@use "../base/variables" as v;
+@use "../base/mixins" as m;
+
+#servicios {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background-color: v.$color-bg;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+
+    .text{
+        position: absolute;
+        top: 110px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+
+        h2 {
+            font-size: 2.5em;
+            color: #333;
+        }
+    }
+
+    .container {
+        display: flex;
+        position: relative;
+        align-items: center;
+        gap: 50px;
+
+        .card{
+            position: relative;
+            width: 350px;
+            height: 350px;
+            background: #fff;
+            border-radius: 40px;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.25);
+            transition: 0.5s;
+            overflow: hidden;
+
+            .imgBx{
+                position: relative;
+                width: 100%;
+                height: 310px;
+                background: var(--img);
+                background-size: cover;
+                background-position: center;
+            }
+
+            .imgBx::before{
+                content: '';
+                position: absolute;
+                width: 100%;
+                height: 80px;
+                bottom: -40px;
+                border-radius: 40px;
+                background: #fff;
+            }
+
+            .imgBx::after{
+                content: '';
+                position: absolute;
+                right: 0;
+                bottom: 40px;
+                width: 80px;
+                height: 80px;
+                background: transparent;
+                border-radius: 50%;
+                box-shadow: 75px 70px 0 40px #fff;
+            }
+
+            .content {
+                position: relative;
+                top: -40px;
+                z-index: 10;
+                padding: 0 30px;
+                transition: 0.5s;
+
+                h3{
+                    position: relative;
+                    font-size: 1.25em;
+                    color: #333;
+
+                    span {
+                        position: absolute;
+                        bottom: -15px;
+                        font-weight: 400;
+                        font-size: 0.65em;
+                        opacity: 0.75;
+                    }
+                }
+
+                p{
+                    position: relative;
+                    opacity: 0;
+                    transition: 0.5s;
+                    color: #333;
+                }
+            }
+        }
+
+        .card:hover {
+            height: 420px;
+
+            .content p{
+                opacity: 1;
+            }
+        }
+    }
+}
