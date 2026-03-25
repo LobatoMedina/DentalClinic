@@ -1,0 +1,73 @@
+@use "../base/variables" as v;
+@use "../base/mixins" as m;
+
+span{
+    font-size: 25px;  
+}
+header {
+    @include m.ajustes(space-between, center);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px 50px;
+    display: flex;
+    z-index: 10000;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(6px);
+
+    .container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .icon {
+        width: 90px;
+        height: 90px;
+        object-fit: contain;
+    }
+
+    .logo {
+        @include m.contenedor();
+        text-decoration: none;
+    }
+
+    nav {
+        display: inline-flex;
+        align-items: center;
+        gap: 40px;
+    }
+
+    .active1 {
+        background: #455D73;
+        color: #A6A6A6; 
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 14px;
+        border-radius: 6px;
+   }
+
+
+   .active2 {
+        background: #212326;  
+        color: #D9D9D9; 
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px 14px;
+        border-radius: 6px;
+   }
+
+    a {
+        text-decoration: none;
+        color: v.$color-letras;
+
+        &:hover {
+            color: #072B59;
+        }
+
+        
+    }
+}
