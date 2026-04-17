@@ -1,0 +1,100 @@
+@use "../base/variables" as v;
+@use "../base/mixins" as m;
+
+#about{
+    background: v.$color-bg;
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: grid;
+    justify-content: center;
+    align-content: end;
+    padding: 50px;
+
+    footer {
+        background: #A6A6A6;
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: 50px 100px;
+    }
+
+    .contenedor {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+        grid-gap: 20px;
+    }
+
+    .sec h2 {
+        position: relative;
+        color: #212326;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    p {
+        color: #212326;
+    }
+
+    .sci {
+        margin-top: 20px;
+        display: grid;
+        grid-template-columns: repeat(4,50px);
+    }
+
+    .sci li {
+        list-style: none;
+    }
+    h1{
+        font-size: 1rem;
+    }
+    .sci  li a {
+        display: inline-block;
+        width: 36px;
+        height: 36px;
+        background: #212326;
+        display: grid;
+        align-content: center;
+        text-decoration: none;
+    }
+
+    .sci li a i {
+        color: #212326;
+        font-size: 20px;
+    }
+
+    .quicklinks {
+       position: relative; 
+    }
+
+    .quicklinks ul li {
+        list-style: none;
+    } 
+
+    .quicklinks ul li a {
+        color: #212326;
+        text-decoration: none;
+        margin-bottom: 10px;
+        display: inline-block;
+    }
+
+    .info {
+        position: relative;
+    }
+
+    .info li {
+        display: flex;
+        grid-template-columns: 36px 1fr;
+        margin-bottom: 16px;
+    }
+
+    .copyrighttext {
+        color: #212326;
+        width: 100%;
+        background: #A6A6A6;
+        padding: 20px 100px 30px;
+        text-align: center;
+    }
+
+}

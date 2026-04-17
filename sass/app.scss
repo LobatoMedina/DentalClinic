@@ -1,0 +1,18 @@
+// Base de la aplicacion
+@forward 'base/normalize';
+@forward 'base/variables';
+@forward 'base/mixins';
+@forward 'base/global';
+
+//Partes en especifico
+@forward 'layout/header';
+@forward 'layout/about';
+@forward 'layout/home';
+@forward 'layout/servicios';
+@forward 'layout/odontologos';
+@forward 'layout/login';
+@forward 'layout/sign';
+
+//index
+@forward 'layout/admin';
+

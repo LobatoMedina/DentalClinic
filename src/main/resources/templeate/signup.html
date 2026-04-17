@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Registrarse</title>
+    <link rel="stylesheet" href="../static/app.css">
+    <link rel="shortcut icon" href="../static/image/icono.ico" type="image/x-icon">
+</head>
+<body>
+
+<div class="img-login">
+    <a href="../build/index.html">
+        <img src="../static/image/icono.PNG" alt="logo">
+    </a>
+</div>
+
+<div class="background-shapes"></div>
+
+<div class="login-container">
+    <div class="card-sign">
+        <h2>Crear Cuenta</h2>
+
+        <!-- <div if="${error}" class="alert alert-danger" text="${error}"></div>
+        <div if="${message}" class="alert alert-success" text="${message}"></div> -->
+
+        <form action="" object="" method="post">
+            <label>Nombre(s)</label>
+            <input type="text" field="*{nombre}" placeholder="Nombre" required>
+
+            <label>Apellido Paterno</label>
+            <input type="text" field="*{app}" placeholder="Apellido Paterno" required>
+
+            <label>Apellido Materno</label>
+            <input type="text" field="*{apm}" placeholder="Apellido Materno" required>
+
+            <label>Correo electrónico</label>
+            <input type="email" field="*{correo}" placeholder="nombre@mail.com" required>
+
+            <label>Contraseña</label>
+            <input type="password" field="*{clave}" placeholder="contraseña" required>
+
+            <button type="submit" class="btn-primary">Registrarse</button>
+        </form>
+
+        <p class="register">
+            ¿Ya tienes cuenta? <a href="../build/login.html">Inicia sesión</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>
