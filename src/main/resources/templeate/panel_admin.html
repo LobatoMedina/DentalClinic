@@ -1,303 +1,856 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>panel_Admin</title>
-    <link rel="shortcut icon" href="../static/image/icono.ico" type="image/x-icon">
-    <link rel="stylesheet" href="../../../../sass/app.css">
+    <title>Panel Admin - DentCare Plus</title>
+    <link rel="icon" type="image/x-icon" href="../static/image/icono.ico">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface2: #222537;
+            --border: #2e3148;
+            --accent: #7c6af7;
+            --accent2: #a78bfa;
+            --text: #e8eaf6;
+            --text-muted: #7b7fa8;
+            --nav-w: 250px;
+            --nav-w-col: 70px;
+            --radius: 12px;
+            --tr: .22s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ── Sidebar ── */
+        .navigation {
+            position: fixed;
+            top: 0; left: 0;
+            width: var(--nav-w);
+            height: 100vh;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            transition: width var(--tr);
+            z-index: 100;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .navigation.active { width: var(--nav-w-col); }
+
+        .nav-logo {
+            display: flex; align-items: center; gap: 12px;
+            padding: 20px 18px;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        .nav-logo img {
+            min-width: 32px; width: 32px; height: 32px;
+            object-fit: contain; border-radius: 8px;
+        }
+        .nav-logo .logo-fallback {
+            min-width: 32px; width: 32px; height: 32px;
+            background: var(--accent); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+        }
+        .nav-logo .logo-name {
+            font-size: 16px; font-weight: 700;
+            transition: opacity var(--tr);
+            white-space: nowrap;
+        }
+        .navigation.active .logo-name { opacity: 0; pointer-events: none; }
+
+        .nav-list { list-style: none; padding: 10px 0; flex: 1; overflow-y: auto; }
+
+        .nav-list li a {
+            display: flex; align-items: center; gap: 14px;
+            padding: 11px 18px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 14px; font-weight: 500;
+            white-space: nowrap;
+            transition: background var(--tr), color var(--tr);
+            position: relative;
+        }
+        .nav-list li a:hover { background: var(--surface2); color: var(--text); }
+        .nav-list li.hovered a { background: var(--surface2); }
+        .nav-list li a.active-link {
+            background: rgba(124,106,247,.15);
+            color: var(--accent2);
+        }
+        .nav-list li a.active-link::before {
+            content: '';
+            position: absolute; left: 0; top: 20%; height: 60%;
+            width: 3px; border-radius: 0 3px 3px 0;
+            background: var(--accent);
+        }
+        .nav-list li a .icon {
+            min-width: 22px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 19px;
+        }
+        .nav-list li a .title {
+            transition: opacity var(--tr);
+        }
+        .navigation.active .nav-list li a .title { opacity: 0; pointer-events: none; }
+
+        /* Logo row at top of nav-list */
+        .nav-list > li:first-child a { cursor: default; }
+
+        .nav-bottom {
+            border-top: 1px solid var(--border);
+            padding: 12px;
+        }
+        .nav-user {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 6px; border-radius: 10px;
+            cursor: pointer; white-space: nowrap;
+            transition: background var(--tr);
+        }
+        .nav-user:hover { background: var(--surface2); }
+        .nav-user .avatar {
+            min-width: 34px; width: 34px; height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: #fff;
+        }
+        .nav-user .uinfo { transition: opacity var(--tr); }
+        .nav-user .uname { font-size: 13px; font-weight: 600; }
+        .nav-user .urole { font-size: 11px; color: var(--accent2); }
+        .navigation.active .nav-user .uinfo { opacity: 0; }
+
+        /* ── Main ── */
+        .main {
+            margin-left: var(--nav-w);
+            flex: 1;
+            transition: margin-left var(--tr);
+            display: flex; flex-direction: column;
+        }
+        .main.active { margin-left: var(--nav-w-col); }
+
+        /* ── Topbar ── */
+        .topbar {
+            height: 64px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center;
+            padding: 0 24px; gap: 14px;
+            position: sticky; top: 0; z-index: 90;
+        }
+        .toggle {
+            background: none; border: none;
+            color: var(--text-muted); cursor: pointer;
+            font-size: 22px; display: flex; align-items: center;
+            padding: 6px; border-radius: 8px;
+            transition: color var(--tr), background var(--tr);
+        }
+        .toggle:hover { color: var(--text); background: var(--surface2); }
+
+        .search label {
+            display: flex; align-items: center; gap: 8px;
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 9px; padding: 8px 14px;
+        }
+        .search input {
+            background: none; border: none; outline: none;
+            color: var(--text); font-size: 13px; width: 180px;
+        }
+        .search input::placeholder { color: var(--text-muted); }
+        .search-icon { color: var(--text-muted); font-size: 16px; }
+
+        .topbar-right { margin-left: auto; }
+        .topbar-right img {
+            width: 36px; height: 36px;
+            border-radius: 50%; object-fit: cover; cursor: pointer;
+        }
+        .topbar-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: #fff; cursor: pointer;
+        }
+
+        /* ── Tabs ── */
+        .tabs-container { padding: 24px; flex: 1; }
+        .tab { display: none; }
+        .tab.active-tab { display: block; }
+
+        /* ── Cards ── */
+        .cardBox {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px; margin-bottom: 24px;
+        }
+        .card-admin {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            display: flex; align-items: center; gap: 16px;
+            transition: border-color var(--tr), transform var(--tr);
+        }
+        .card-admin:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .card-admin .numbers { font-size: 26px; font-weight: 800; }
+        .card-admin .cardName { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+        .iconBx {
+            margin-left: auto;
+            width: 44px; height: 44px;
+            background: rgba(124,106,247,.15);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: var(--accent2);
+        }
+
+        /* ── Section containers ── */
+        .section-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .section-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .section-header h2 { font-size: 15px; font-weight: 600; }
+
+        /* ── Tables ── */
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead tr td, thead tr th {
+            padding: 11px 20px;
+            font-size: 11px; font-weight: 700;
+            letter-spacing: .06em; text-transform: uppercase;
+            color: var(--text-muted);
+            background: rgba(255,255,255,.02);
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+        tbody td { padding: 13px 20px; border-bottom: 1px solid rgba(46,49,72,.4); }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover td { background: rgba(255,255,255,.02); }
+
+        /* ── Status badges ── */
+        .badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 11px; font-weight: 600;
+            padding: 3px 10px; border-radius: 99px;
+        }
+        .badge-green  { background: rgba(52,211,153,.12); color: #34d399; }
+        .badge-orange { background: rgba(249,115,22,.12);  color: #f97316; }
+        .badge-blue   { background: rgba(96,165,250,.12);  color: #60a5fa; }
+        .badge-red    { background: rgba(239,68,68,.12);   color: #ef4444; }
+        .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+        /* ── Forms ── */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 9px; padding: 10px 13px;
+            color: var(--text); font-size: 13px; font-family: inherit;
+            outline: none; transition: border-color var(--tr);
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus { border-color: var(--accent); }
+        .form-group select option { background: var(--surface2); }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+
+        /* ── Buttons ── */
+        .btn {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 9px 18px; border-radius: 9px; border: none;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            font-family: inherit;
+            transition: opacity .18s, transform .18s;
+        }
+        .btn:hover { opacity: .85; transform: translateY(-1px); }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-outline {
+            background: transparent; border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+        .btn-outline:hover { border-color: var(--accent); color: var(--accent2); }
+        .btn-sm { padding: 6px 13px; font-size: 12px; }
+        .btn-danger { background: rgba(239,68,68,.12); color: #ef4444; border: 1px solid rgba(239,68,68,.2); }
+
+        /* ── Pacientes list ── */
+        .recentCustomers .imgBx {
+            width: 46px; height: 46px;
+            border-radius: 50%; overflow: hidden;
+            background: var(--surface2);
+        }
+        .recentCustomers .imgBx img { width: 100%; height: 100%; object-fit: cover; }
+        .recentCustomers h4 { font-size: 13px; font-weight: 600; }
+        .recentCustomers span { font-size: 11px; color: var(--text-muted); }
+
+        .details {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .details { grid-template-columns: 1fr; }
+        }
+
+        /* ── Mensajes ── */
+        .msg-card {
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 10px; padding: 14px 16px; margin-bottom: 10px;
+        }
+        .msg-card .msg-head {
+            display: flex; justify-content: space-between; margin-bottom: 6px;
+        }
+        .msg-card .msg-from { font-size: 13px; font-weight: 600; color: var(--accent2); }
+        .msg-card .msg-time { font-size: 11px; color: var(--text-muted); }
+        .msg-card .msg-body { font-size: 13px; color: var(--text-muted); }
+
+        /* ── Formulario inline ── */
+        .formulario {
+            padding: 20px;
+            display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;
+        }
+        .formulario input,
+        .formulario select {
+            flex: 1; min-width: 160px;
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 9px; padding: 10px 13px;
+            color: var(--text); font-size: 13px; font-family: inherit; outline: none;
+            transition: border-color var(--tr);
+        }
+        .formulario input:focus,
+        .formulario select:focus { border-color: var(--accent); }
+
+        /* ── Page title ── */
+        .page-title { font-size: 15px; font-weight: 600; color: var(--text-muted); }
+    </style>
 </head>
-<body class="body">
-    <div class="container">
-        <div class="navigation">
-            <ul>
-                <li>
-                    <a href="#">
-                        <div class="logo">
-                            <span class="image"><img src="../static/image/icono.PNG"></span>
-                            <span class="title">DentCare Plus</span>
-                        </div>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-tab="dashboard">
-                        <span class="icon"><ion-icon name="home-outline"></ion-icon></span>
-                        <span class="title">Dashboard</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-tab="clientes">
-                        <span class="icon"><ion-icon name="person-outline"></ion-icon></span>
-                        <span class="title">Cliente</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-tab="mensajes">
-                        <span class="icon"><ion-icon name="chatbubble-ellipses-outline"></ion-icon></span>
-                        <span class="title">Mensajes</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-tab="ayuda">
-                        <span class="icon"><ion-icon name="help-outline"></ion-icon></span>
-                        <span class="title">Ayuda</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-tab="config">
-                        <span class="icon"><ion-icon name="settings-outline"></ion-icon></span>
-                        <span class="title">Configuracion</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" data-tab="contraseña">
-                        <span class="icon"><ion-icon name="lock-closed-outline"></ion-icon></span>
-                        <span class="title">Contraseña</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <span class="icon"><ion-icon name="log-in-outline"></ion-icon></span>
-                        <span class="title">Sign Out</span>
-                    </a>
-                </li>
-            </ul>
+<body>
+
+<!-- ══ SIDEBAR ══ -->
+<div class="navigation" id="navigation">
+    <div class="nav-logo">
+        <div class="logo-fallback">🦷</div>
+        <span class="logo-name">DentCare Plus</span>
+    </div>
+
+    <ul class="nav-list">
+        <li><a href="#" class="active-link" data-tab="dashboard">
+            <span class="icon">🏠</span><span class="title">Dashboard</span>
+        </a></li>
+        <li><a href="#" data-tab="pacientes">
+            <span class="icon">🧑‍⚕️</span><span class="title">Pacientes</span>
+        </a></li>
+        <li><a href="#" data-tab="citas">
+            <span class="icon">📅</span><span class="title">Citas</span>
+        </a></li>
+        <li><a href="#" data-tab="mensajes">
+            <span class="icon">💬</span><span class="title">Mensajes</span>
+        </a></li>
+        <li><a href="#" data-tab="ayuda">
+            <span class="icon">❓</span><span class="title">Ayuda</span>
+        </a></li>
+        <li><a href="#" data-tab="config">
+            <span class="icon">⚙️</span><span class="title">Configuración</span>
+        </a></li>
+        <li><a href="#" data-tab="contrasena">
+            <span class="icon">🔒</span><span class="title">Contraseña</span>
+        </a></li>
+        <li><a href="../templeate/index.html">
+            <span class="icon">🚪</span><span class="title">Cerrar Sesión</span>
+        </a></li>
+    </ul>
+
+    <div class="nav-bottom">
+        <div class="nav-user">
+            <div class="avatar">DR</div>
+            <div class="uinfo">
+                <div class="uname">Dr. Ramírez</div>
+                <div class="urole">Administrador</div>
+            </div>
         </div>
     </div>
-    <div class="main">
-        <div class="topbar">
-            <div class="toggle">
-                <ion-icon name="menu-outline"></ion-icon>
-            </div>
-            <div class="search">
-                <label>
-                    <input type="text" placeholder="Buscar aqui">
-                    <ion-icon name="search-outline"></ion-icon>
-                </label>
-            </div>
-            <div class="user">
-                <img src="../static/image/odontologo1.png">
-            </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div class="main" id="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+        <button class="toggle" id="toggleBtn">☰</button>
+        <div class="search">
+            <label>
+                <input type="text" placeholder="Buscar paciente, cita...">
+                <span class="search-icon">🔍</span>
+            </label>
         </div>
-        <div class="tabs-container">
-            <div id="dashboard" class="tab active-tab">
-                <div class="cardBox">
-                    <div class="card-admin">
-                        <div>
-                            <div class="numbers">1,504</div>
-                            <div class="cardName">Daily Views</div>
-                        </div>
-                        <div class="iconBx">
-                            <ion-icon name="eye-outline"></ion-icon>
-                        </div>  
-                    </div>
+        <div class="topbar-right">
+            <div class="topbar-avatar">DR</div>
+        </div>
+    </div>
+
+    <!-- ══ TABS ══ -->
+    <div class="tabs-container">
+
+        <!-- ── DASHBOARD ── -->
+        <div id="dashboard" class="tab active-tab">
+            <div class="cardBox">
                 <div class="card-admin">
                     <div>
-                        <div class="numbers">80</div>
-                        <div class="cardName">Sales</div>
+                        <div class="numbers">24</div>
+                        <div class="cardName">Citas Hoy</div>
                     </div>
-                    <div class="iconBx">
-                        <ion-icon name="cart-outline"></ion-icon>
-                    </div>
+                    <div class="iconBx">📅</div>
                 </div>
                 <div class="card-admin">
                     <div>
-                        <div class="numbers">284</div>
-                        <div class="cardName">Comments</div>
+                        <div class="numbers">312</div>
+                        <div class="cardName">Pacientes</div>
                     </div>
-                    <div class="iconBx">
-                        <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
-                    </div>
+                    <div class="iconBx">🧑‍⚕️</div>
                 </div>
                 <div class="card-admin">
                     <div>
-                        <div class="numbers">$7,842</div>
-                        <div class="cardName">Earning</div>
+                        <div class="numbers">8</div>
+                        <div class="cardName">Pendientes</div>
                     </div>
-                    <div class="iconBx">
-                        <ion-icon name="cash-outline"></ion-icon>
+                    <div class="iconBx">⏳</div>
+                </div>
+                <div class="card-admin">
+                    <div>
+                        <div class="numbers">$14,200</div>
+                        <div class="cardName">Ingresos Mes</div>
                     </div>
+                    <div class="iconBx">💰</div>
                 </div>
             </div>
+
             <div class="details">
-                <div class="recentOrders">
-                    <div class="cardHeader">
-                        <h2>Recent Orders</h2>
-                        <a href="#" class="btn-orders">View All</a>
+                <!-- Citas recientes -->
+                <div class="section-box">
+                    <div class="section-header">
+                        <h2>Citas Recientes</h2>
+                        <a href="#" class="btn btn-outline btn-sm" data-tab="citas">Ver todas</a>
                     </div>
                     <table>
                         <thead>
                             <tr>
-                                <td>Name</td>
-                                <td>Price</td>
-                                <td>Payment</td>
-                                <td>Status</td>
+                                <td>Paciente</td>
+                                <td>Tratamiento</td>
+                                <td>Hora</td>
+                                <td>Estado</td>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Star Refrigerator</td>
-                                <td>$1200</td>
-                                <td>Paid</td>
-                                <td><span class="status delivered">Delivered</span></td>
+                                <td>Ana Torres</td>
+                                <td>Limpieza dental</td>
+                                <td>09:00</td>
+                                <td><span class="badge badge-green"><span class="badge-dot"></span>Completada</span></td>
                             </tr>
                             <tr>
-                                <td>Windows Coolers</td>
-                                <td>$110</td>
-                                <td>Due</td>
-                                <td><span class="status pending">Pending</span></td>
+                                <td>Luis Moreno</td>
+                                <td>Extracción</td>
+                                <td>10:30</td>
+                                <td><span class="badge badge-blue"><span class="badge-dot"></span>En curso</span></td>
                             </tr>
                             <tr>
-                                <td>Speakers</td>
-                                <td>$620</td>
-                                <td>Paid</td>
-                                <td><span class="status return">Return</span></td>
+                                <td>María Pérez</td>
+                                <td>Ortodoncia</td>
+                                <td>12:00</td>
+                                <td><span class="badge badge-orange"><span class="badge-dot"></span>Pendiente</span></td>
                             </tr>
                             <tr>
-                                <td>Hp Laptop</td>
-                                <td>$110</td>
-                                <td>Due</td>
-                                <td><span class="status inprogress">In Progress</span></td>
+                                <td>Carlos Ruiz</td>
+                                <td>Blanqueamiento</td>
+                                <td>14:00</td>
+                                <td><span class="badge badge-orange"><span class="badge-dot"></span>Pendiente</span></td>
                             </tr>
                             <tr>
-                                <td>Apple Watch</td>
-                                <td>$1200</td>
-                                <td>Paid</td>
-                                <td><span class="status delivered">Delivered</span></td>
+                                <td>Rosa Hdz</td>
+                                <td>Revisión general</td>
+                                <td>16:30</td>
+                                <td><span class="badge badge-red"><span class="badge-dot"></span>Cancelada</span></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-                <div class="recentCustomers">
-                    <div class="cardHeader">
-                        <h2>Recent Customers</h2>
+
+                <!-- Pacientes recientes -->
+                <div class="section-box recentCustomers">
+                    <div class="section-header">
+                        <h2>Pacientes Recientes</h2>
                     </div>
                     <table>
-                        <tr>
-                            <td width="60px"><div class="imgBx"><img src="../static/image/odontologo1.png" alt="aqui va imagen"></div></td>
-                            <td><h4>Javier</h4><span>Italy</span></td>
-                        </tr>
-                        <tr>
-                            <td width="60px"><div class="imgBx"><img src="../static/image/odontologo1.png" alt="aqui va imagen"></div></td>
-                            <td><h4>Javier</h4><span>Italy</span></td>
-                        </tr>
-                        <tr>
-                            <td width="60px"><div class="imgBx"><img src="../static/image/odontologo1.png" alt="aqui va imagen"></div></td>
-                            <td><h4>Javier</h4><span>Italy</span></td>
-                        </tr>
-                        <tr>
-                            <td width="60px"><div class="imgBx"><img src="../static/image/odontologo1.png" alt="aqui va imagen"></div></td>
-                            <td><h4>Javier</h4><span>Italy</span></td>
-                        </tr>
+                        <tbody>
+                            <tr>
+                                <td width="58"><div class="imgBx"><img src="../static/image/odontologo1.png" onerror="this.style.display='none'"></div></td>
+                                <td><h4>Ana Torres</h4><span>Limpieza dental</span></td>
+                            </tr>
+                            <tr>
+                                <td width="58"><div class="imgBx"></div></td>
+                                <td><h4>Luis Moreno</h4><span>Extracción</span></td>
+                            </tr>
+                            <tr>
+                                <td width="58"><div class="imgBx"></div></td>
+                                <td><h4>María Pérez</h4><span>Ortodoncia</span></td>
+                            </tr>
+                            <tr>
+                                <td width="58"><div class="imgBx"></div></td>
+                                <td><h4>Carlos Ruiz</h4><span>Blanqueamiento</span></td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
         </div>
-        <div id="clientes" class="tab">
-            <div class="cardHeader">
-                <h2>Gestión de Clientes</h2>
-                <button class="btn">Nuevo</button>
-            </div>
 
-            <div class="formulario">
-                <input type="text" placeholder="Nombre">
-                <input type="email" placeholder="Correo">
-                <input type="text" placeholder="Teléfono">
-                <button class="btn">Guardar</button>
-            </div>
+        <!-- ── PACIENTES ── -->
+        <div id="pacientes" class="tab">
+            <div class="section-box" style="margin-bottom:20px;">
+                <div class="section-header">
+                    <h2>Gestión de Pacientes</h2>
+                    <button class="btn btn-primary btn-sm" id="btnNuevoPaciente">+ Nuevo</button>
+                </div>
 
-            <div class="tabla">
+                <div id="formPaciente" style="display:none; padding:20px; border-bottom:1px solid var(--border);">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nombre completo</label>
+                            <input type="text" placeholder="Nombre del paciente">
+                        </div>
+                        <div class="form-group">
+                            <label>Correo electrónico</label>
+                            <input type="email" placeholder="correo@ejemplo.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Teléfono</label>
+                            <input type="text" placeholder="771-000-0000">
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha de nacimiento</label>
+                            <input type="date">
+                        </div>
+                    </div>
+                    <div style="margin-top:14px; display:flex; gap:10px;">
+                        <button class="btn btn-primary">Guardar</button>
+                        <button class="btn btn-outline" id="btnCancelarPaciente">Cancelar</button>
+                    </div>
+                </div>
+
                 <table>
                     <thead>
                         <tr>
-                            <td>ID</td>
-                            <td>Nombre</td>
-                            <td>Correo</td>
-                            <td>Teléfono</td>
-                            <td>Acciones</td>
+                            <th>ID</th><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Última visita</th><th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>1</td>
-                            <td>Juan Pérez</td>
-                            <td>juan@mail.com</td>
-                            <td>123456789</td>
-                            <td>
-                                <button class="edit">Editar</button>
-                                <button class="delete">Eliminar</button>
-                            </td>
+                            <td>001</td><td>Ana Torres</td><td>ana@mail.com</td><td>771-111-2222</td><td>24 Abr 2026</td>
+                            <td><button class="btn btn-sm btn-outline">Editar</button> <button class="btn btn-sm btn-danger">Eliminar</button></td>
+                        </tr>
+                        <tr>
+                            <td>002</td><td>Luis Moreno</td><td>luis@mail.com</td><td>771-333-4444</td><td>24 Abr 2026</td>
+                            <td><button class="btn btn-sm btn-outline">Editar</button> <button class="btn btn-sm btn-danger">Eliminar</button></td>
+                        </tr>
+                        <tr>
+                            <td>003</td><td>María Pérez</td><td>maria@mail.com</td><td>771-555-6666</td><td>23 Abr 2026</td>
+                            <td><button class="btn btn-sm btn-outline">Editar</button> <button class="btn btn-sm btn-danger">Eliminar</button></td>
+                        </tr>
+                        <tr>
+                            <td>004</td><td>Carlos Ruiz</td><td>carlos@mail.com</td><td>771-777-8888</td><td>22 Abr 2026</td>
+                            <td><button class="btn btn-sm btn-outline">Editar</button> <button class="btn btn-sm btn-danger">Eliminar</button></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
+        <!-- ── CITAS ── -->
+        <div id="citas" class="tab">
+            <div class="section-box" style="margin-bottom:20px;">
+                <div class="section-header">
+                    <h2>Gestión de Citas</h2>
+                    <button class="btn btn-primary btn-sm" id="btnNuevaCita">+ Nueva cita</button>
+                </div>
+
+                <div id="formCita" style="display:none; padding:20px; border-bottom:1px solid var(--border);">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Paciente</label>
+                            <select>
+                                <option>— Seleccionar —</option>
+                                <option>001 — Ana Torres</option>
+                                <option>002 — Luis Moreno</option>
+                                <option>003 — María Pérez</option>
+                                <option>004 — Carlos Ruiz</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tratamiento</label>
+                            <select>
+                                <option>Limpieza dental</option>
+                                <option>Extracción</option>
+                                <option>Ortodoncia</option>
+                                <option>Blanqueamiento</option>
+                                <option>Revisión general</option>
+                                <option>Endodoncia</option>
+                                <option>Implante</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha</label>
+                            <input type="date">
+                        </div>
+                        <div class="form-group">
+                            <label>Hora</label>
+                            <input type="time">
+                        </div>
+                        <div class="form-group">
+                            <label>Odontólogo</label>
+                            <select>
+                                <option>Dr. Ramírez</option>
+                                <option>Dra. Gómez</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select>
+                                <option>Pendiente</option>
+                                <option>Confirmada</option>
+                                <option>Completada</option>
+                                <option>Cancelada</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="margin-top:14px; display:flex; gap:10px;">
+                        <button class="btn btn-primary">Guardar</button>
+                        <button class="btn btn-outline" id="btnCancelarCita">Cancelar</button>
+                    </div>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>Paciente</th><th>Tratamiento</th><th>Fecha</th><th>Hora</th><th>Odontólogo</th><th>Estado</th><th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>#001</td><td>Ana Torres</td><td>Limpieza dental</td><td>24/04/26</td><td>09:00</td><td>Dr. Ramírez</td>
+                            <td><span class="badge badge-green"><span class="badge-dot"></span>Completada</span></td>
+                            <td><button class="btn btn-sm btn-outline">Editar</button> <button class="btn btn-sm btn-danger">Cancelar</button></td>
+                        </tr>
+                        <tr>
+                            <td>#002</td><td>Luis Moreno</td><td>Extracción</td><td>24/04/26</td><td>10:30</td><td>Dr. Ramírez</td>
+                            <td><span class="badge badge-blue"><span class="badge-dot"></span>En curso</span></td>
+                            <td><button class="btn btn-sm btn-outline">Editar</button> <button class="btn btn-sm btn-danger">Cancelar</button></td>
+                        </tr>
+                        <tr>
+                            <td>#003</td><td>María Pérez</td><td>Ortodoncia</td><td>24/04/26</td><td>12:00</td><td>Dra. Gómez</td>
+                            <td><span class="badge badge-orange"><span class="badge-dot"></span>Pendiente</span></td>
+                            <td><button class="btn btn-sm btn-outline">Editar</button> <button class="btn btn-sm btn-danger">Cancelar</button></td>
+                        </tr>
+                        <tr>
+                            <td>#004</td><td>Carlos Ruiz</td><td>Blanqueamiento</td><td>24/04/26</td><td>14:00</td><td>Dr. Ramírez</td>
+                            <td><span class="badge badge-orange"><span class="badge-dot"></span>Pendiente</span></td>
+                            <td><button class="btn btn-sm btn-outline">Editar</button> <button class="btn btn-sm btn-danger">Cancelar</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ── MENSAJES ── -->
         <div id="mensajes" class="tab">
-            <h2>Mensajes</h2>
-
-            <div class="card">
-                <p><strong>Usuario:</strong> Javier</p>
-                <p>Hola, necesito ayuda con mi cita</p>
+            <div class="section-box">
+                <div class="section-header"><h2>Mensajes</h2></div>
+                <div style="padding:16px 20px;">
+                    <div class="msg-card">
+                        <div class="msg-head">
+                            <span class="msg-from">Ana Torres</span>
+                            <span class="msg-time">Hace 10 min</span>
+                        </div>
+                        <div class="msg-body">Hola, ¿puedo cambiar mi cita del viernes a las 11am?</div>
+                    </div>
+                    <div class="msg-card">
+                        <div class="msg-head">
+                            <span class="msg-from">Luis Moreno</span>
+                            <span class="msg-time">Hace 1 h</span>
+                        </div>
+                        <div class="msg-body">Doctor, tengo un dolor fuerte en la muela del juicio.</div>
+                    </div>
+                    <div class="msg-card">
+                        <div class="msg-head">
+                            <span class="msg-from">Carlos Ruiz</span>
+                            <span class="msg-time">Ayer</span>
+                        </div>
+                        <div class="msg-body">¿Cuánto cuesta el blanqueamiento dental?</div>
+                    </div>
+                </div>
             </div>
         </div>
 
+        <!-- ── AYUDA ── -->
         <div id="ayuda" class="tab">
-            <h2>Ayuda</h2>
-        </div>
-
-        <div id="config" class="tab">
-            <h2>Configuración</h2>
-
-            <div class="formulario">
-                <input type="text" placeholder="Nombre de la clínica">
-                <input type="text" placeholder="Dirección">
-                <button class="btn">Guardar cambios</button>
+            <div class="section-box">
+                <div class="section-header"><h2>Centro de Ayuda</h2></div>
+                <div style="padding:20px; display:flex; flex-direction:column; gap:12px;">
+                    <div style="background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:16px;">
+                        <strong style="font-size:14px;">¿Cómo agendar una cita?</strong>
+                        <p style="font-size:13px; color:var(--text-muted); margin-top:6px;">Ve a la sección <em>Citas</em> y haz clic en <em>+ Nueva cita</em>. Selecciona el paciente, tratamiento, fecha y hora.</p>
+                    </div>
+                    <div style="background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:16px;">
+                        <strong style="font-size:14px;">¿Cómo agregar un paciente?</strong>
+                        <p style="font-size:13px; color:var(--text-muted); margin-top:6px;">Ve a <em>Pacientes</em> y usa el botón <em>+ Nuevo</em> para registrar nombre, correo y teléfono.</p>
+                    </div>
+                    <div style="background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:16px;">
+                        <strong style="font-size:14px;">¿Cómo cambiar el estado de una cita?</strong>
+                        <p style="font-size:13px; color:var(--text-muted); margin-top:6px;">En la tabla de citas, usa el botón <em>Editar</em> de la fila correspondiente para actualizar el estado.</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div id="contraseña" class="tab">
-            <h2>Contraseña</h2>
+        <!-- ── CONFIGURACIÓN ── -->
+        <div id="config" class="tab">
+            <div class="section-box" style="max-width:520px;">
+                <div class="section-header"><h2>Configuración de la Clínica</h2></div>
+                <div style="padding:20px;">
+                    <div class="form-grid">
+                        <div class="form-group full">
+                            <label>Nombre de la clínica</label>
+                            <input type="text" value="DentCare Plus">
+                        </div>
+                        <div class="form-group full">
+                            <label>Dirección</label>
+                            <input type="text" value="Av. Principal #100, Hidalgo">
+                        </div>
+                        <div class="form-group">
+                            <label>Teléfono</label>
+                            <input type="text" value="771-000-0000">
+                        </div>
+                        <div class="form-group">
+                            <label>Correo de contacto</label>
+                            <input type="email" value="contacto@dentcareplus.com">
+                        </div>
+                    </div>
+                    <div style="margin-top:16px;">
+                        <button class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>    
-</div>
-<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+        <!-- ── CONTRASEÑA ── -->
+        <div id="contrasena" class="tab">
+            <div class="section-box" style="max-width:420px;">
+                <div class="section-header"><h2>Cambiar Contraseña</h2></div>
+                <div style="padding:20px; display:flex; flex-direction:column; gap:14px;">
+                    <div class="form-group">
+                        <label>Contraseña actual</label>
+                        <input type="password" placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label>Nueva contraseña</label>
+                        <input type="password" placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar nueva contraseña</label>
+                        <input type="password" placeholder="••••••••">
+                    </div>
+                    <button class="btn btn-primary" style="align-self:flex-start;">Actualizar</button>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /tabs-container -->
+</div><!-- /main -->
 
 <script>
-    let toggle = document.querySelector('.toggle');
-    let navigation = document.querySelector('.navigation');
-    let main = document.querySelector('.main');
+    /* ── Toggle sidebar ── */
+    const nav     = document.getElementById('navigation');
+    const mainEl  = document.getElementById('main');
 
-    toggle.onclick = function(){
-        navigation.classList.toggle('active');
-        main.classList.toggle('active');
-    }
-    
-
-    let list = document.querySelectorAll('.navigation li');
-    function activeLink(){
-        list.forEach((item) => item.classList.remove('hovered'));
-        this.classList.add('hovered')
-    }
-
-    list.forEach((item) => item.addEventListener('mouseover', activeLink));
-</script>
-<script>
-let links = document.querySelectorAll('.navigation a[data-tab]');
-let tabs = document.querySelectorAll('.tab');
-
-links.forEach(link => {
-    link.addEventListener('click', function(e){
-        e.preventDefault();
-
-        let tabId = this.getAttribute('data-tab');
-
-        tabs.forEach(tab => tab.classList.remove('active-tab'));
-
-        document.getElementById(tabId).classList.add('active-tab');
+    document.getElementById('toggleBtn').addEventListener('click', () => {
+        nav.classList.toggle('active');
+        mainEl.classList.toggle('active');
     });
-});
+
+    /* ── Hover sidebar items ── */
+    document.querySelectorAll('.nav-list li').forEach(li => {
+        li.addEventListener('mouseover', function() {
+            document.querySelectorAll('.nav-list li').forEach(x => x.classList.remove('hovered'));
+            this.classList.add('hovered');
+        });
+    });
+
+    /* ── Tab navigation ── */
+    function activateTab(tabId) {
+        // hide all tabs
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active-tab'));
+        // remove active from all links
+        document.querySelectorAll('.nav-list a[data-tab]').forEach(a => a.classList.remove('active-link'));
+
+        const target = document.getElementById(tabId);
+        if (target) target.classList.add('active-tab');
+
+        const link = document.querySelector(`.nav-list a[data-tab="${tabId}"]`);
+        if (link) link.classList.add('active-link');
+    }
+
+    // Sidebar links
+    document.querySelectorAll('.nav-list a[data-tab]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            activateTab(this.getAttribute('data-tab'));
+        });
+    });
+
+    // "Ver todas" button in dashboard
+    document.querySelectorAll('a[data-tab], button[data-tab]').forEach(el => {
+        el.addEventListener('click', function(e) {
+            const tab = this.getAttribute('data-tab');
+            if (tab) { e.preventDefault(); activateTab(tab); }
+        });
+    });
+
+    /* ── Toggle form Paciente ── */
+    const formPaciente = document.getElementById('formPaciente');
+    document.getElementById('btnNuevoPaciente').addEventListener('click', () => {
+        formPaciente.style.display = formPaciente.style.display === 'none' ? 'block' : 'none';
+    });
+    document.getElementById('btnCancelarPaciente').addEventListener('click', () => {
+        formPaciente.style.display = 'none';
+    });
+
+    /* ── Toggle form Cita ── */
+    const formCita = document.getElementById('formCita');
+    document.getElementById('btnNuevaCita').addEventListener('click', () => {
+        formCita.style.display = formCita.style.display === 'none' ? 'block' : 'none';
+    });
+    document.getElementById('btnCancelarCita').addEventListener('click', () => {
+        formCita.style.display = 'none';
+    });
 </script>
 </body>
 </html>
