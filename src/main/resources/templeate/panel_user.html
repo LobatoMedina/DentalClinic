@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Portal - DentCare Plus</title>
+    <link rel="icon" type="image/x-icon" href="../static/image/icono.ico">
+    <style>
+        /* Estilos base (Mantenemos los anteriores) */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --surface2: #222537;
+            --border: #2e3148;
+            --accent: #7c6af7;
+            --accent2: #a78bfa;
+            --text: #e8eaf6;
+            --text-muted: #7b7fa8;
+            --nav-w: 240px;
+            --radius: 16px;
+            --tr: .25s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--nav-w);
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .logo { padding: 0 24px 30px; font-size: 1.2rem; font-weight: 800; color: var(--accent2); }
+
+        .nav-links { list-style: none; flex: 1; }
+        .nav-links li { cursor: pointer; }
+        .nav-links li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 24px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--tr);
+            font-size: 0.95rem;
+        }
+
+        .nav-links li.active a {
+            color: var(--accent2);
+            background: rgba(124, 106, 247, 0.1);
+            border-right: 3px solid var(--accent);
+        }
+
+        /* Lógica de Tabs: Ocultar secciones por defecto */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Contenedor Principal */
+        .content { margin-left: var(--nav-w); flex: 1; padding: 40px; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 20px; }
+        
+        .client-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; }
+        .btn-action { background: var(--accent); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; width: 100%; }
+
+        /* Estilos específicos de Citas */
+        .appointment-card { display: flex; justify-content: space-between; align-items: center; background: var(--surface2); padding: 15px; border-radius: 12px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo">🦷 DentCare Plus</div>
+    <ul class="nav-links">
+        <li class="tab-link active" data-tab="inicio"><a>🏠 Inicio</a></li>
+        <li class="tab-link" data-tab="citas"><a>📅 Mis Citas</a></li>
+        <li class="tab-link" data-tab="recetas"><a>💊 Recetas</a></li>
+    </ul>
+</aside>
+
+<main class="content">
+    
+    <div id="inicio" class="tab-content active">
+        <header style="margin-bottom: 30px;">
+            <h1>¡Hola de nuevo! 👋</h1>
+            <p style="color: var(--text-muted);">Este es el resumen de tu salud dental hoy.</p>
+        </header>
+
+        <div class="client-grid">
+            <div class="card" style="background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; border: none;">
+                <h3>Próxima Cita</h3>
+                <p style="font-size: 2rem; font-weight: 700; margin-top: 10px;">Hoy - 09:00 AM</p>
+                <p>Limpieza General con Dr. Ramírez</p>
+            </div>
+            <div class="card">
+                <h3>Acciones Rápidas</h3>
+                <button class="btn-action">Nueva Cita</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="citas" class="tab-content">
+        <h1>Mis Citas Pendientes</h1>
+        <div class="card">
+            <div class="appointment-card">
+                <div>
+                    <strong>Ortodoncia - Ajuste Mensual</strong>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">15 de Mayo, 2026 - 4:00 PM</p>
+                </div>
+                <span style="color: #fbbf24;">Pendiente</span>
+            </div>
+            <div class="appointment-card">
+                <div>
+                    <strong>Revisión de Cordales</strong>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">02 de Junio, 2026 - 10:00 AM</p>
+                </div>
+                <span style="color: #fbbf24;">Pendiente</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="recetas" class="tab-content">
+        <h1>Mis Recetas Digitales</h1>
+        <div class="card">
+            <p style="color: var(--text-muted); margin-bottom: 15px;">Aquí puedes descargar tus órdenes médicas recientes.</p>
+            <div style="background: var(--surface2); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <span>Antibiótico_Post_Extraccion.pdf</span>
+                <button style="background: transparent; border: 1px solid var(--accent); color: var(--accent2); padding: 5px 15px; border-radius: 8px; cursor: pointer;">Descargar</button>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script>
+    // Seleccionamos todos los enlaces de la sidebar
+    const tabLinks = document.querySelectorAll('.tab-link');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            const targetTab = link.getAttribute('data-tab');
+
+            // 1. Quitar clase active de todos los links
+            tabLinks.forEach(item => item.classList.remove('active'));
+            // 2. Ocultar todos los contenidos
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // 3. Activar el link actual y mostrar su contenido
+            link.classList.add('active');
+            document.getElementById(targetTab).classList.add('active');
+        });
+    });
+</script>
+
+</body>
+</html>
